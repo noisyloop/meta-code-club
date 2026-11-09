@@ -134,6 +134,7 @@ export function MemberDetailPage() {
                   <ListItem
                     key={p.id}
                     label={p.title}
+                    href={`/projects/${p.id}`}
                     description={p.techStack.join(' · ')}
                     endContent={<Badge variant={STATUS_VARIANT[p.status]} label={p.status} />}
                   />
@@ -153,7 +154,7 @@ export function MemberDetailPage() {
                 {mySubmissions.map(s => (
                   <ListItem
                     key={s.id}
-                    label={challengeById.get(s.challengeId)?.title ?? 'Unknown challenge'}
+                    label={<Link href={`/challenges/${s.challengeId}`}>{challengeById.get(s.challengeId)?.title ?? 'Unknown challenge'}</Link>}
                     description={<Timestamp value={s.submittedAt} format="date" />}
                     endContent={
                       <Link href={s.repoUrl} target="_blank">

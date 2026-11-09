@@ -6,7 +6,7 @@ import {AppShell} from '@astryxdesign/core/AppShell';
 import {SideNav, SideNavHeading, SideNavItem, SideNavSection} from '@astryxdesign/core/SideNav';
 import {NavIcon} from '@astryxdesign/core/NavIcon';
 import {Icon} from '@astryxdesign/core/Icon';
-import {Code2, LayoutDashboard, Users} from 'lucide-react';
+import {Code2, Flag, LayoutDashboard, Rocket, Users} from 'lucide-react';
 import {themes, defaultThemeSlug} from './astryx-themes';
 import {RouterLink} from './components/RouterLink';
 import {ThemeModeToggle} from './components/ThemeModeToggle';
@@ -15,6 +15,12 @@ import {DashboardPage} from './pages/DashboardPage';
 import {MembersPage} from './pages/members/MembersPage';
 import {MemberDetailPage} from './pages/members/MemberDetailPage';
 import {MemberFormPage} from './pages/members/MemberFormPage';
+import {ChallengesPage} from './pages/challenges/ChallengesPage';
+import {ChallengeDetailPage} from './pages/challenges/ChallengeDetailPage';
+import {ChallengeFormPage} from './pages/challenges/ChallengeFormPage';
+import {ProjectsPage} from './pages/projects/ProjectsPage';
+import {ProjectDetailPage} from './pages/projects/ProjectDetailPage';
+import {ProjectFormPage} from './pages/projects/ProjectFormPage';
 import {NotFoundPage} from './pages/NotFoundPage';
 
 export function App() {
@@ -51,6 +57,18 @@ export function App() {
                   href="/members"
                   isSelected={pathname.startsWith('/members')}
                 />
+                <SideNavItem
+                  label="Challenges"
+                  icon={Flag}
+                  href="/challenges"
+                  isSelected={pathname.startsWith('/challenges')}
+                />
+                <SideNavItem
+                  label="Projects"
+                  icon={Rocket}
+                  href="/projects"
+                  isSelected={pathname.startsWith('/projects')}
+                />
               </SideNavSection>
             </SideNav>
           }>
@@ -60,6 +78,14 @@ export function App() {
             <Route path="/members/new" element={<MemberFormPage />} />
             <Route path="/members/:id" element={<MemberDetailPage />} />
             <Route path="/members/:id/edit" element={<MemberFormPage />} />
+            <Route path="/challenges" element={<ChallengesPage />} />
+            <Route path="/challenges/new" element={<ChallengeFormPage />} />
+            <Route path="/challenges/:id" element={<ChallengeDetailPage />} />
+            <Route path="/challenges/:id/edit" element={<ChallengeFormPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/projects/new" element={<ProjectFormPage />} />
+            <Route path="/projects/:id" element={<ProjectDetailPage />} />
+            <Route path="/projects/:id/edit" element={<ProjectFormPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AppShell>
