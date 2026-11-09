@@ -16,6 +16,7 @@ import {MetadataList, MetadataListItem} from '@astryxdesign/core/MetadataList';
 import {Timestamp} from '@astryxdesign/core/Timestamp';
 import {useToast} from '@astryxdesign/core/Toast';
 import {Flame, Pencil, Trash2} from 'lucide-react';
+import {safeExternalUrl} from '../../lib/safeUrl';
 import {PageLayout} from '../../components/PageLayout';
 import {QueryGate} from '../../components/QueryState';
 import {SkillBadge} from '../../components/badges';
@@ -157,9 +158,11 @@ export function MemberDetailPage() {
                     label={<Link href={`/challenges/${s.challengeId}`}>{challengeById.get(s.challengeId)?.title ?? 'Unknown challenge'}</Link>}
                     description={<Timestamp value={s.submittedAt} format="date" />}
                     endContent={
-                      <Link href={s.repoUrl} target="_blank">
-                        Repo
-                      </Link>
+                      safeExternalUrl(s.repoUrl) ? (
+                        <Link href={safeExternalUrl(s.repoUrl)} target="_blank" rel="noopener noreferrer">
+                          Repo
+                        </Link>
+                      ) : undefined
                     }
                   />
                 ))}

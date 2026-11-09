@@ -20,6 +20,15 @@ npm run astryx -- component --list   # Astryx CLI (components, templates, docs)
 - Dark mode: `<Theme mode>` with a Light / System / Dark toggle, persisted in localStorage.
 - Routing: `LinkProvider` + `src/components/RouterLink.tsx` make Astryx nav items client-side links.
 
+## Quality checks
+
+```bash
+npm test            # unit tests (data layer, validation, guards, URL safety)
+npm run build       # typecheck + production build (adds a Content-Security-Policy)
+```
+
+See [docs/security-review.md](docs/security-review.md) for the security review.
+
 ## Stages
 
 1. Setup and theme (done)
@@ -27,4 +36,4 @@ npm run astryx -- component --list   # Astryx CLI (components, templates, docs)
 3. Dashboard and Members (done)
 4. Challenges and Projects (done)
 5. Meetups wizard and check-in (done)
-6. Polish
+6. Polish and security review (done)

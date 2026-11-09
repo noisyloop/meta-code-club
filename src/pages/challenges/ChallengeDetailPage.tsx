@@ -19,6 +19,7 @@ import {ProgressBar} from '@astryxdesign/core/ProgressBar';
 import {Timestamp} from '@astryxdesign/core/Timestamp';
 import {useToast} from '@astryxdesign/core/Toast';
 import {Pencil, Trash2} from 'lucide-react';
+import {safeExternalUrl} from '../../lib/safeUrl';
 import {PageLayout} from '../../components/PageLayout';
 import {QueryGate} from '../../components/QueryState';
 import {DifficultyBadge} from '../../components/badges';
@@ -143,9 +144,11 @@ export function ChallengeDetailPage() {
                       label={m ? <Link href={`/members/${m.id}`}>{m.name}</Link> : 'Unknown member'}
                       description={<Timestamp value={s.submittedAt} format="date" />}
                       endContent={
-                        <Link href={s.repoUrl} target="_blank">
-                          Repo
-                        </Link>
+                        safeExternalUrl(s.repoUrl) ? (
+                          <Link href={safeExternalUrl(s.repoUrl)} target="_blank" rel="noopener noreferrer">
+                            Repo
+                          </Link>
+                        ) : undefined
                       }
                     />
                   );

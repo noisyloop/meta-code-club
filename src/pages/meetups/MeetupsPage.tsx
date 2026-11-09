@@ -43,7 +43,7 @@ export function MeetupsPage() {
     <PageLayout
       title="Meetups"
       actions={<Button label="Schedule meetup" icon={<Icon icon={CalendarPlus} />} variant="primary" href="/meetups/new" />}>
-      <QueryGate states={[meetups, members]}>
+      <QueryGate states={[meetups, members]} skeleton="table">
         {meetups.data && members.data && <MeetupLists meetups={meetups.data} members={members.data} />}
       </QueryGate>
     </PageLayout>

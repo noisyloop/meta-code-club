@@ -57,7 +57,7 @@ export function ProjectsPage() {
     <PageLayout
       title="Projects"
       actions={<Button label="Add project" icon={<Icon icon={Plus} />} variant="primary" href="/projects/new" />}>
-      <QueryGate states={[projects, members]}>
+      <QueryGate states={[projects, members]} skeleton="cards">
         {projects.data && members.data && <ProjectsBrowser projects={projects.data} members={members.data} />}
       </QueryGate>
     </PageLayout>
@@ -102,8 +102,10 @@ function ProjectsBrowser({projects, members}: {projects: Project[]; members: Mem
         {status === 'all' ? `${projects.length} projects` : `${rows.length} of ${projects.length} projects`}
       </Text>
 
-      {rows.length === 0 ? (
-        <EmptyState title="No projects here" description="Try a different status, or add a project." />
+      {projects.length === 0 ? (
+        <EmptyState headingLevel={2} title="No projects yet" description="Add the first project for the club." actions={<Button label="Add project" variant="primary" href="/projects/new" />} />
+      ) : rows.length === 0 ? (
+        <EmptyState headingLevel={2} title="No projects here" description="Try a different status, or add a project." actions={<Button label="Show all" onClick={() => setStatus('all')} />} />
       ) : view === 'cards' ? (
         <Grid columns={{minWidth: 280}} gap={4}>
           {rows.map(r => {

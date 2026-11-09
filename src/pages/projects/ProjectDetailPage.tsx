@@ -15,6 +15,7 @@ import {useToast} from '@astryxdesign/core/Toast';
 import {Code2, ExternalLink, Pencil, Trash2} from 'lucide-react';
 import {PageLayout} from '../../components/PageLayout';
 import {QueryGate} from '../../components/QueryState';
+import {safeExternalUrl} from '../../lib/safeUrl';
 import {StatusBadge} from '../../components/badges';
 import {NotFoundPage} from '../NotFoundPage';
 import {getStore} from '../../data/store';
@@ -39,6 +40,8 @@ export function ProjectDetailPage() {
   const project = projects.data.find(p => p.id === id);
   if (!project) return <NotFoundPage what="project" />;
   const owner = members.data.find(m => m.id === project.memberId);
+  const repoUrl = safeExternalUrl(project.repoUrl);
+  const demoUrl = safeExternalUrl(project.demoUrl);
 
   const remove = async () => {
     setIsDeleting(true);
@@ -105,9 +108,9 @@ export function ProjectDetailPage() {
             </MetadataList>
             <Heading level={3}>Links</Heading>
             <HStack gap={2} wrap="wrap">
-              <Button label="Repository" icon={<Icon icon={Code2} />} href={project.repoUrl} target="_blank" rel="noopener noreferrer" />
-              {project.demoUrl ? (
-                <Button label="Live demo" icon={<Icon icon={ExternalLink} />} href={project.demoUrl} target="_blank" rel="noopener noreferrer" variant="primary" />
+              {repoUrl && <Button label="Repository" icon={<Icon icon={Code2} />} href={repoUrl} target="_blank" rel="noopener noreferrer" />}
+              {demoUrl ? (
+                <Button label="Live demo" icon={<Icon icon={ExternalLink} />} href={demoUrl} target="_blank" rel="noopener noreferrer" variant="primary" />
               ) : (
                 <Text type="supporting" color="secondary">
                   No demo yet

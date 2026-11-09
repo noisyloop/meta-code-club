@@ -2,6 +2,9 @@ import {useMemo, useState} from 'react';
 import {HStack, VStack} from '@astryxdesign/core/Stack';
 import {Table, proportional, pixel, useTableSortable, useTableSortableState} from '@astryxdesign/core/Table';
 import type {TableColumn} from '@astryxdesign/core/Table';
+import {useMediaQuery} from '@astryxdesign/core/hooks';
+import {Card} from '@astryxdesign/core/Card';
+import {EmptyState} from '@astryxdesign/core/EmptyState';
 import {Avatar} from '@astryxdesign/core/Avatar';
 import {Badge} from '@astryxdesign/core/Badge';
 import {Button} from '@astryxdesign/core/Button';
@@ -95,7 +98,7 @@ export function MembersPage() {
     <PageLayout
       title="Members"
       actions={<Button label="Add member" icon={<Icon icon={Plus} />} variant="primary" href="/members/new" />}>
-      <QueryGate states={[members]}>{members.data && <MembersTable members={members.data} />}</QueryGate>
+      <QueryGate states={[members]} skeleton="table">{members.data && <MembersTable members={members.data} />}</QueryGate>
     </PageLayout>
   );
 }
@@ -127,6 +130,16 @@ function MembersTable({members}: {members: Member[]}) {
   });
   const sortable = useTableSortable<Row>(sortConfig);
   const isFiltered = Boolean(query || skill || language);
+  const isNarrow = useMediaQuery('(max-width: 640px)');
+  const clearFilters = () => {
+    setQuery('');
+    setSkill('');
+    setLanguage('');
+  };
+
+  if (members.length === 0) {
+    return <EmptyState headingLevel={2} title="No members yet" description="Add your first club member to get started." actions={<Button label="Add member" variant="primary" href="/members/new" />} />;
+  }
 
   return (
     <VStack gap={4}>
@@ -165,7 +178,40 @@ function MembersTable({members}: {members: Member[]}) {
       <Text type="supporting" color="secondary" role="status">
         {isFiltered ? `${filtered.length} of ${members.length} members` : `${members.length} members`}
       </Text>
-      <Table data={sortedData} columns={columns} idKey="id" plugins={{sortable}} hasHover />
+      {sortedData.length === 0 ? (
+        <EmptyState
+          headingLevel={2}
+          title="No members match"
+          description="Try a different name, skill level or language."
+          actions={<Button label="Clear filters" onClick={clearFilters} />}
+        />
+      ) : isNarrow ? (
+        <VStack gap={3}>
+          {sortedData.map(r => (
+            <Card key={r.id} variant="muted">
+              <VStack gap={2}>
+                <HStack gap={2} vAlign="center" justify="between">
+                  <HStack gap={2} vAlign="center">
+                    <Avatar name={r.name} size="sm" tooltip={false} />
+                    <Link href={`/members/${r.id}`}>{r.name}</Link>
+                  </HStack>
+                  <SkillBadge level={r.skillLevel} />
+                </HStack>
+                <HStack gap={1} wrap="wrap">
+                  {r.languages.map(l => (
+                    <Badge key={l} label={l} />
+                  ))}
+                </HStack>
+                <Text type="supporting" color="secondary">
+                  {r.attendanceStreak} meetup streak{r.mentorName ? ` · Mentor: ${r.mentorName}` : ''}
+                </Text>
+              </VStack>
+            </Card>
+          ))}
+        </VStack>
+      ) : (
+        <Table data={sortedData} columns={columns} idKey="id" plugins={{sortable}} hasHover />
+      )}
     </VStack>
   );
 }

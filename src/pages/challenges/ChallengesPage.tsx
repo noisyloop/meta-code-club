@@ -1,4 +1,7 @@
 import {useMemo, useState} from 'react';
+import {useMediaQuery} from '@astryxdesign/core/hooks';
+import {Card} from '@astryxdesign/core/Card';
+import {EmptyState} from '@astryxdesign/core/EmptyState';
 import {HStack, VStack} from '@astryxdesign/core/Stack';
 import {Table, proportional, pixel, useTableSortable, useTableSortableState} from '@astryxdesign/core/Table';
 import type {TableColumn} from '@astryxdesign/core/Table';
@@ -71,7 +74,7 @@ export function ChallengesPage() {
     <PageLayout
       title="Challenges"
       actions={<Button label="Add challenge" icon={<Icon icon={Plus} />} variant="primary" href="/challenges/new" />}>
-      <QueryGate states={[challenges, submissions]}>
+      <QueryGate states={[challenges, submissions]} skeleton="table">
         {challenges.data && submissions.data && <ChallengesTable challenges={challenges.data} submissions={submissions.data} />}
       </QueryGate>
     </PageLayout>
@@ -97,6 +100,11 @@ function ChallengesTable({challenges, submissions}: {challenges: Challenge[]; su
   });
   const sortable = useTableSortable<Row>(sortConfig);
   const isFiltered = Boolean(difficulty || state);
+  const isNarrow = useMediaQuery('(max-width: 640px)');
+
+  if (challenges.length === 0) {
+    return <EmptyState headingLevel={2} title="No challenges yet" description="Add a challenge for the club to tackle." actions={<Button label="Add challenge" variant="primary" href="/challenges/new" />} />;
+  }
 
   return (
     <VStack gap={4}>
@@ -128,7 +136,44 @@ function ChallengesTable({challenges, submissions}: {challenges: Challenge[]; su
       <Text type="supporting" color="secondary" role="status">
         {isFiltered ? `${filtered.length} of ${challenges.length} challenges` : `${challenges.length} challenges`}
       </Text>
-      <Table data={sortedData} columns={columns} idKey="id" plugins={{sortable}} hasHover />
+      {sortedData.length === 0 ? (
+        <EmptyState
+          headingLevel={2}
+          title="No challenges match"
+          description="Try a different difficulty or status."
+          actions={
+            <Button
+              label="Clear filters"
+              onClick={() => {
+                setDifficulty('');
+                setState('');
+              }}
+            />
+          }
+        />
+      ) : isNarrow ? (
+        <VStack gap={3}>
+          {sortedData.map(r => (
+            <Card key={r.id} variant="muted">
+              <VStack gap={2}>
+                <HStack gap={2} vAlign="center" justify="between">
+                  <Link href={`/challenges/${r.id}`}>{r.title}</Link>
+                  <DifficultyBadge level={r.difficulty} />
+                </HStack>
+                <HStack gap={2} vAlign="center">
+                  <Timestamp value={r.dueDate} format="date" />
+                  {!r.isOpen && <Badge label="Closed" />}
+                </HStack>
+                <Text type="supporting" color="secondary">
+                  {r.submissions} {r.submissions === 1 ? 'submission' : 'submissions'}
+                </Text>
+              </VStack>
+            </Card>
+          ))}
+        </VStack>
+      ) : (
+        <Table data={sortedData} columns={columns} idKey="id" plugins={{sortable}} hasHover />
+      )}
     </VStack>
   );
 }

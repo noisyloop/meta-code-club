@@ -6,6 +6,7 @@ export function NotFoundPage({what = 'page'}: {what?: string}) {
   return (
     <PageLayout title="Not found">
       <EmptyState
+        headingLevel={2}
         title={`We couldn't find that ${what}`}
         description="It may have been deleted, or the link is wrong."
         actions={<Button label="Back to dashboard" href="/" variant="primary" />}

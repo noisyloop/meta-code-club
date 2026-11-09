@@ -80,6 +80,7 @@ function DashboardBody({members, challenges, submissions, projects, meetups}: Bo
       .filter(m => new Date(m.date) >= now)
       .map(m => ({
         key: m.id,
+        href: `/meetups/${m.id}`,
         date: m.date,
         kind: 'Meetup' as const,
         title: m.topic,
@@ -87,6 +88,7 @@ function DashboardBody({members, challenges, submissions, projects, meetups}: Bo
       })),
     ...open.map(c => ({
       key: c.id,
+      href: `/challenges/${c.id}`,
       date: c.dueDate,
       kind: 'Challenge due' as const,
       title: c.title,
@@ -126,6 +128,7 @@ function DashboardBody({members, challenges, submissions, projects, meetups}: Bo
               {upcoming.map(u => (
                 <ListItem
                   key={u.key}
+                  href={u.href}
                   label={u.title}
                   description={u.detail}
                   startContent={<Badge variant={u.kind === 'Meetup' ? 'blue' : 'orange'} label={u.kind} />}

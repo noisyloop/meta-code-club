@@ -1,4 +1,5 @@
 import {createSeed} from './seed';
+import {isChallenge, isMeetup, isMember, isProject, isSubmission} from './guards';
 import type {Challenge, Meetup, Member, NewEntity, Project, Submission} from './types';
 
 /**
@@ -37,6 +38,13 @@ export interface StorageLike {
 const PREFIX = 'code-club-hub:v1:';
 type Collection = 'members' | 'challenges' | 'submissions' | 'projects' | 'meetups';
 const COLLECTIONS: Collection[] = ['members', 'challenges', 'submissions', 'projects', 'meetups'];
+const GUARDS: Record<Collection, (v: unknown) => boolean> = {
+  members: isMember,
+  challenges: isChallenge,
+  submissions: isSubmission,
+  projects: isProject,
+  meetups: isMeetup,
+};
 
 function newId(prefix: string): string {
   const rand = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -51,8 +59,10 @@ export function createLocalStorageStore(
   const notify = () => listeners.forEach(l => l());
 
   const read = <T>(c: Collection): T[] => {
+    // Storage is an untrusted boundary: tolerate bad JSON, non-arrays and malformed rows.
     try {
-      return JSON.parse(storage.getItem(PREFIX + c) ?? '[]') as T[];
+      const parsed: unknown = JSON.parse(storage.getItem(PREFIX + c) ?? '[]');
+      return Array.isArray(parsed) ? (parsed.filter(GUARDS[c]) as T[]) : [];
     } catch {
       return [];
     }
