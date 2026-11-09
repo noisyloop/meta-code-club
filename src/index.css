@@ -1,0 +1,12 @@
+/* Astryx tokens drive all colour/spacing. Only app-level basics live here. */
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: var(--font-family-body);
+  background: var(--color-background-body);
+  color: var(--color-text-primary);
+}

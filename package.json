@@ -1,0 +1,37 @@
+{
+  "name": "code-club-hub",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "astryx": "node node_modules/@astryxdesign/cli/clients/cli/bin/astryx.mjs"
+  },
+  "browserslist": [
+    "last 1 Chrome version"
+  ],
+  "dependencies": {
+    "@astryxdesign/core": "^0.7.12-canary.a0f2a2d",
+    "@astryxdesign/theme-neutral": "^0.7.12-canary.a0f2a2d",
+    "@stylexjs/stylex": "^0.19.1",
+    "lucide-react": "^1.70.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5"
+  },
+  "devDependencies": {
+    "@astryxdesign/cli": "^0.7.12-canary.a0f2a2d",
+    "@babel/core": "^7.29.7",
+    "@stylexjs/babel-plugin": "^0.19.1",
+    "@stylexjs/unplugin": "^0.19.1",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.7"
+  }
+}
