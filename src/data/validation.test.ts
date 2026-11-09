@@ -4,6 +4,7 @@ import {
   validateChallenge,
   validateMember,
   validateProject,
+  validateSubmission,
   wouldCreateMentorCycle,
   type ChallengeDraft,
   type MemberDraft,
@@ -96,4 +97,27 @@ describe('validateMeetup', () => {
     expect(errorsForStep(e, 1)).toEqual(['agenda']);
     expect(errorsForStep(e, 2).sort()).toEqual(['agenda', 'topic']);
   });
+});
+
+describe('validateSubmission', () => {
+  const {submissions} = createSeed(NOW);
+  const okS = {memberId: 'mem-3', repoUrl: 'https://github.com/a/b'};
+  it('accepts a new member with a valid repo URL', () => expect(validateSubmission(okS, 'chal-4', members, submissions)).toEqual({}));
+  it('requires a member and a repo URL', () => {
+    const e = validateSubmission({memberId: '', repoUrl: ' '}, 'chal-4', members, submissions);
+    expect(Object.keys(e).sort()).toEqual(['memberId', 'repoUrl']);
+  });
+  it('rejects unsafe or malformed URLs', () => {
+    for (const bad of ['javascript:alert(1)', 'github.com/x', 'ftp://x.y']) {
+      expect(validateSubmission({...okS, repoUrl: bad}, 'chal-4', members, submissions).repoUrl).toMatch(/full URL/);
+    }
+  });
+  it('blocks a second submission by the same member, except when editing that submission', () => {
+    // mem-8 already submitted chal-4 (sub-17)
+    expect(validateSubmission({...okS, memberId: 'mem-8'}, 'chal-4', members, submissions).memberId).toMatch(/already submitted/);
+    expect(validateSubmission({...okS, memberId: 'mem-8'}, 'chal-4', members, submissions, 'sub-17')).toEqual({});
+    // the same member may submit a different challenge
+    expect(validateSubmission({...okS, memberId: 'mem-8'}, 'chal-6', members, submissions)).toEqual({});
+  });
+  it('rejects unknown members', () => expect(validateSubmission({...okS, memberId: 'ghost'}, 'chal-4', members, submissions).memberId).toMatch(/no longer/));
 });

@@ -1,4 +1,4 @@
-import type {Challenge, Meetup, Member, Project} from './types';
+import type {Challenge, Meetup, Member, Project, Submission} from './types';
 
 export type FieldErrors<K extends string> = Partial<Record<K, string>>;
 export type MemberDraft = Omit<Member, 'id'>;
@@ -156,3 +156,29 @@ export function validateMeetup(draft: MeetupDraft, members: Member[]): FieldErro
 
 export const errorsForStep = (errors: FieldErrors<MeetupField>, step: number) =>
   MEETUP_STEP_FIELDS[step].filter(f => errors[f]);
+
+// ---------------------------------------------------------------------------
+// Challenge submissions
+// ---------------------------------------------------------------------------
+export type SubmissionDraft = {memberId: string; repoUrl: string};
+export type SubmissionField = 'memberId' | 'repoUrl';
+
+/** A member can complete a challenge once. `editingId` excludes the row being edited from that check. */
+export function validateSubmission(
+  draft: SubmissionDraft,
+  challengeId: string,
+  members: Member[],
+  submissions: Submission[],
+  editingId?: string,
+): FieldErrors<SubmissionField> {
+  const errors: FieldErrors<SubmissionField> = {};
+  if (!draft.memberId) errors.memberId = 'Choose who completed this challenge.';
+  else if (!members.some(m => m.id === draft.memberId)) errors.memberId = 'That member no longer exists.';
+  else if (submissions.some(s => s.id !== editingId && s.challengeId === challengeId && s.memberId === draft.memberId)) {
+    errors.memberId = 'This member has already submitted this challenge.';
+  }
+
+  if (!draft.repoUrl.trim()) errors.repoUrl = 'Repository URL is required.';
+  else if (!isHttpUrl(draft.repoUrl)) errors.repoUrl = 'Enter a full URL starting with https://';
+  return errors;
+}

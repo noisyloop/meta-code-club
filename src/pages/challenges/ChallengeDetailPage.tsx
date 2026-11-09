@@ -18,15 +18,18 @@ import {MetadataList, MetadataListItem} from '@astryxdesign/core/MetadataList';
 import {ProgressBar} from '@astryxdesign/core/ProgressBar';
 import {Timestamp} from '@astryxdesign/core/Timestamp';
 import {useToast} from '@astryxdesign/core/Toast';
-import {Pencil, Trash2} from 'lucide-react';
+import {IconButton} from '@astryxdesign/core/IconButton';
+import {Pencil, Plus, Trash2} from 'lucide-react';
 import {safeExternalUrl} from '../../lib/safeUrl';
 import {PageLayout} from '../../components/PageLayout';
 import {QueryGate} from '../../components/QueryState';
 import {DifficultyBadge} from '../../components/badges';
+import {SubmissionDialog} from './SubmissionDialog';
 import {NotFoundPage} from '../NotFoundPage';
 import {getStore} from '../../data/store';
 import {useChallenges, useMembers, useSubmissions} from '../../data/useStoreQuery';
 import {byId} from '../../data/selectors';
+import type {Submission} from '../../data/types';
 
 export function ChallengeDetailPage() {
   const {id = ''} = useParams();
@@ -37,6 +40,10 @@ export function ChallengeDetailPage() {
   const submissions = useSubmissions();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  // Submission dialog: undefined = closed, null = adding, Submission = editing.
+  const [dialog, setDialog] = useState<Submission | null | undefined>(undefined);
+  const [removing, setRemoving] = useState<Submission | undefined>(undefined);
+  const [dialogKey, setDialogKey] = useState(0);
 
   if (!challenges.data || !members.data || !submissions.data) {
     return (
@@ -123,7 +130,20 @@ export function ChallengeDetailPage() {
 
         <Card>
           <VStack gap={3}>
-            <Heading level={2}>Completed by</Heading>
+            <HStack gap={2} vAlign="center" justify="between" wrap="wrap">
+              <Heading level={2}>Completed by</Heading>
+              <Button
+                size="sm"
+                label="Submit solution"
+                variant="primary"
+                icon={<Icon icon={Plus} />}
+                isDisabled={members.data.length === done.length}
+                onClick={() => {
+                  setDialogKey(k => k + 1);
+                  setDialog(null);
+                }}
+              />
+            </HStack>
             <ProgressBar
               label="Completion"
               value={done.length}
@@ -144,11 +164,30 @@ export function ChallengeDetailPage() {
                       label={m ? <Link href={`/members/${m.id}`}>{m.name}</Link> : 'Unknown member'}
                       description={<Timestamp value={s.submittedAt} format="date" />}
                       endContent={
-                        safeExternalUrl(s.repoUrl) ? (
-                          <Link href={safeExternalUrl(s.repoUrl)} target="_blank" rel="noopener noreferrer">
-                            Repo
-                          </Link>
-                        ) : undefined
+                        <HStack gap={1} vAlign="center">
+                          {safeExternalUrl(s.repoUrl) && (
+                            <Link href={safeExternalUrl(s.repoUrl)} target="_blank" rel="noopener noreferrer">
+                              Repo
+                            </Link>
+                          )}
+                          <IconButton
+                            label={`Edit ${m?.name ?? 'member'}'s submission`}
+                            size="sm"
+                            variant="ghost"
+                            icon={<Icon icon={Pencil} />}
+                            onClick={() => {
+                              setDialogKey(k => k + 1);
+                              setDialog(s);
+                            }}
+                          />
+                          <IconButton
+                            label={`Remove ${m?.name ?? 'member'}'s submission`}
+                            size="sm"
+                            variant="ghost"
+                            icon={<Icon icon={Trash2} />}
+                            onClick={() => setRemoving(s)}
+                          />
+                        </HStack>
                       }
                     />
                   );
@@ -159,6 +198,33 @@ export function ChallengeDetailPage() {
         </Card>
       </Grid>
 
+      <SubmissionDialog
+        key={dialogKey}
+        challenge={challenge}
+        members={members.data}
+        submissions={submissions.data}
+        editing={dialog ?? undefined}
+        isOpen={dialog !== undefined}
+        onClose={() => setDialog(undefined)}
+      />
+      <AlertDialog
+        isOpen={removing !== undefined}
+        onOpenChange={open => !open && setRemoving(undefined)}
+        title="Remove this submission?"
+        description={`${removing ? (memberById.get(removing.memberId)?.name ?? 'This member') : ''} will no longer be listed as having completed “${challenge.title}”.`}
+        actionLabel="Remove submission"
+        onAction={async () => {
+          if (!removing) return;
+          try {
+            await getStore().submissions.remove(removing.id);
+            showToast({body: 'Submission removed.', type: 'info'});
+          } catch (e) {
+            showToast({body: e instanceof Error ? e.message : 'Could not remove submission.', type: 'error'});
+          } finally {
+            setRemoving(undefined);
+          }
+        }}
+      />
       <AlertDialog
         isOpen={confirmOpen}
         onOpenChange={setConfirmOpen}

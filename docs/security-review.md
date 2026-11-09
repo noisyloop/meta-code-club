@@ -14,7 +14,7 @@ URLs and (b) a future backend returning untrusted data into the same code paths.
 | Area | Finding |
 | --- | --- |
 | HTML injection / XSS | No `dangerouslySetInnerHTML`, `innerHTML`, `eval`, `new Function`, `document.write` anywhere in `src/`. All text is rendered through React. The only rich-text path (challenge prompts) uses Astryx `Markdown`, which URL-sanitises links and images. Verified: a prompt containing `[x](javascript:…)`, `<img onerror>`, `<script>` and `![](javascript:…)` produced 0 script-capable elements and 0 dialogs. |
-| URL handling | `repoUrl`/`demoUrl` are validated on input (http/https with a dotted host only). |
+| URL handling | `repoUrl`/`demoUrl` and submission repo URLs are validated on input (http/https with a dotted host only). |
 | Auth / secrets / network | None exist. No keys, tokens, cookies, fetches or third-party scripts. |
 | Dependencies | `npm audit`: 0 vulnerabilities. |
 
