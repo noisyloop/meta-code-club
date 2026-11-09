@@ -24,7 +24,7 @@ npm run astryx -- component --list   # Astryx CLI (components, templates, docs)
 
 1. Setup and theme (done)
 2. Data layer and seed data (done)
-3. Dashboard and Members
+3. Dashboard and Members (done)
 4. Challenges and Projects
 5. Meetups wizard and check-in
 6. Polish
