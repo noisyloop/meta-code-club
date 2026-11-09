@@ -76,3 +76,24 @@ describe('validateProject', () => {
     expect(['javascript:alert(1)', 'github.com/x', 'https://localhost', ''].some(isHttpUrl)).toBe(false);
   });
 });
+
+import {errorsForStep, validateMeetup, type MeetupDraft} from './validation';
+describe('validateMeetup', () => {
+  const okM: MeetupDraft = {date: '2026-12-01T18:00:00.000Z', topic: 'Intro to SQL', hostId: 'mem-4', agenda: ['Welcome'], attendeeIds: []};
+  it('accepts a valid draft', () => expect(validateMeetup(okM, members)).toEqual({}));
+  it('flags every missing field', () => {
+    const e = validateMeetup({...okM, date: '', topic: '', hostId: '', agenda: ['', ' ']}, members);
+    expect(Object.keys(e).sort()).toEqual(['agenda', 'date', 'hostId', 'topic']);
+  });
+  it('rejects unknown hosts and oversized agendas', () => {
+    expect(validateMeetup({...okM, hostId: 'ghost'}, members).hostId).toMatch(/no longer/);
+    expect(validateMeetup({...okM, agenda: Array.from({length: 11}, (_, i) => `Item ${i}`)}, members).agenda).toMatch(/at most 10/);
+    expect(validateMeetup({...okM, agenda: ['x'.repeat(121)]}, members).agenda).toMatch(/120/);
+  });
+  it('scopes errors to wizard steps', () => {
+    const e = validateMeetup({...okM, topic: '', agenda: []}, members);
+    expect(errorsForStep(e, 0)).toEqual(['topic']);
+    expect(errorsForStep(e, 1)).toEqual(['agenda']);
+    expect(errorsForStep(e, 2).sort()).toEqual(['agenda', 'topic']);
+  });
+});

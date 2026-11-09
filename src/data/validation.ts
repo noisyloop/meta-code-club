@@ -1,4 +1,4 @@
-import type {Challenge, Member, Project} from './types';
+import type {Challenge, Meetup, Member, Project} from './types';
 
 export type FieldErrors<K extends string> = Partial<Record<K, string>>;
 export type MemberDraft = Omit<Member, 'id'>;
@@ -124,3 +124,35 @@ export function validateProject(draft: ProjectDraft, members: Member[]): FieldEr
   if (draft.demoUrl?.trim() && !isHttpUrl(draft.demoUrl)) errors.demoUrl = 'Enter a full URL starting with https://';
   return errors;
 }
+
+// ---------------------------------------------------------------------------
+// Meetups
+// ---------------------------------------------------------------------------
+export type MeetupDraft = Omit<Meetup, 'id'>;
+export type MeetupField = 'date' | 'topic' | 'hostId' | 'agenda';
+export const MAX_AGENDA_ITEMS = 10;
+/** Which fields each wizard step owns. Step 3 (review) re-checks everything. */
+export const MEETUP_STEP_FIELDS: MeetupField[][] = [['date', 'topic'], ['hostId', 'agenda'], ['date', 'topic', 'hostId', 'agenda']];
+
+export function validateMeetup(draft: MeetupDraft, members: Member[]): FieldErrors<MeetupField> {
+  const errors: FieldErrors<MeetupField> = {};
+  if (!draft.date) errors.date = 'Date and time are required.';
+  else if (Number.isNaN(Date.parse(draft.date))) errors.date = 'Enter a valid date and time.';
+
+  const topic = draft.topic.trim();
+  if (!topic) errors.topic = 'Topic is required.';
+  else if (topic.length < 3) errors.topic = 'Topic must be at least 3 characters.';
+  else if (topic.length > 80) errors.topic = 'Topic must be 80 characters or fewer.';
+
+  if (!draft.hostId) errors.hostId = 'Choose a host.';
+  else if (!members.some(m => m.id === draft.hostId)) errors.hostId = 'That member no longer exists.';
+
+  const agenda = draft.agenda.map(a => a.trim()).filter(Boolean);
+  if (agenda.length === 0) errors.agenda = 'Add at least one agenda item.';
+  else if (agenda.length > MAX_AGENDA_ITEMS) errors.agenda = `Use at most ${MAX_AGENDA_ITEMS} agenda items.`;
+  else if (agenda.some(a => a.length > 120)) errors.agenda = 'Each agenda item must be 120 characters or fewer.';
+  return errors;
+}
+
+export const errorsForStep = (errors: FieldErrors<MeetupField>, step: number) =>
+  MEETUP_STEP_FIELDS[step].filter(f => errors[f]);

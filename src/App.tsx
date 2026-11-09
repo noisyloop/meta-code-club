@@ -6,7 +6,7 @@ import {AppShell} from '@astryxdesign/core/AppShell';
 import {SideNav, SideNavHeading, SideNavItem, SideNavSection} from '@astryxdesign/core/SideNav';
 import {NavIcon} from '@astryxdesign/core/NavIcon';
 import {Icon} from '@astryxdesign/core/Icon';
-import {Code2, Flag, LayoutDashboard, Rocket, Users} from 'lucide-react';
+import {CalendarDays, Code2, Flag, LayoutDashboard, Rocket, Users} from 'lucide-react';
 import {themes, defaultThemeSlug} from './astryx-themes';
 import {RouterLink} from './components/RouterLink';
 import {ThemeModeToggle} from './components/ThemeModeToggle';
@@ -21,6 +21,10 @@ import {ChallengeFormPage} from './pages/challenges/ChallengeFormPage';
 import {ProjectsPage} from './pages/projects/ProjectsPage';
 import {ProjectDetailPage} from './pages/projects/ProjectDetailPage';
 import {ProjectFormPage} from './pages/projects/ProjectFormPage';
+import {MeetupsPage} from './pages/meetups/MeetupsPage';
+import {MeetupDetailPage} from './pages/meetups/MeetupDetailPage';
+import {MeetupWizardPage} from './pages/meetups/MeetupWizardPage';
+import {MeetupCheckInPage} from './pages/meetups/MeetupCheckInPage';
 import {NotFoundPage} from './pages/NotFoundPage';
 
 export function App() {
@@ -69,6 +73,12 @@ export function App() {
                   href="/projects"
                   isSelected={pathname.startsWith('/projects')}
                 />
+                <SideNavItem
+                  label="Meetups"
+                  icon={CalendarDays}
+                  href="/meetups"
+                  isSelected={pathname.startsWith('/meetups')}
+                />
               </SideNavSection>
             </SideNav>
           }>
@@ -86,6 +96,11 @@ export function App() {
             <Route path="/projects/new" element={<ProjectFormPage />} />
             <Route path="/projects/:id" element={<ProjectDetailPage />} />
             <Route path="/projects/:id/edit" element={<ProjectFormPage />} />
+            <Route path="/meetups" element={<MeetupsPage />} />
+            <Route path="/meetups/new" element={<MeetupWizardPage />} />
+            <Route path="/meetups/:id" element={<MeetupDetailPage />} />
+            <Route path="/meetups/:id/edit" element={<MeetupWizardPage />} />
+            <Route path="/meetups/:id/checkin" element={<MeetupCheckInPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AppShell>
