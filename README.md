@@ -4,6 +4,24 @@ A web app for running a coding club: keep track of members, weekly challenges, m
 meetups, all in one place. Built with [Astryx](https://astryx.atmeta.com), Meta's open source design
 system, on React 19, Vite and TypeScript.
 
+<table>
+  <tr>
+    <td><img src="docs/screenshots/dashboard.png" alt="Dashboard with stat cards and an upcoming list" width="620"></td>
+    <td><img src="docs/screenshots/phone.png" alt="Projects page on a phone" width="150"></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td><img src="docs/screenshots/challenge.png" alt="Challenge page with hints and the Submit solution dialog" width="300"></td>
+    <td><img src="docs/screenshots/projects.png" alt="Projects as cards with a status filter" width="300"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/checkin.png" alt="Meetup check-in" width="300"></td>
+    <td><img src="docs/screenshots/members-dark.png" alt="Members table in dark mode" width="300"></td>
+  </tr>
+</table>
+
 > No backend needed. Data is saved in your browser's `localStorage` and comes pre-loaded with demo
 > content (12 members, 6 challenges, 20 submissions, 8 projects, 4 meetups).
 
@@ -13,7 +31,7 @@ system, on React 19, Vite and TypeScript.
 | --- | --- |
 | **Dashboard** | See the next meetup, active members, open challenges and shipped projects at a glance, plus an "Upcoming" list of meetups and challenge deadlines. |
 | **Members** | Sort and filter (name, skill level, language). Open a member to see their projects, submissions, attendance streak and mentor. Add, edit and delete members. |
-| **Challenges** | Table with difficulty badges, due dates and submission counts. Each challenge shows its prompt, hints that reveal one at a time on click, and who has completed it. |
+| **Challenges** | Table with difficulty badges, due dates and submission counts. Each challenge shows its prompt, hints that reveal one at a time on click, and who has completed it. Use **Submit solution** to record a completion (member and repo URL), and edit or remove it later. |
 | **Projects** | Card or table view with a status filter (idea, building, shipped). Detail pages link to the repo and live demo and list the tech stack. |
 | **Meetups** | Upcoming and past meetups, a 3-step scheduling wizard (date and topic, host and agenda, review), and a check-in view for marking attendance. |
 
@@ -73,7 +91,7 @@ docs/security-review.md   security review notes
 - **Member:** name, skill level (beginner, intermediate, advanced), languages, joined date,
   attendance streak, optional mentor.
 - **Challenge:** title, prompt (Markdown), difficulty (easy, medium, hard), due date, hints.
-- **Submission:** challenge, member, repo URL, submitted date.
+- **Submission:** challenge, member, repo URL, submitted date. A member can submit each challenge once.
 - **Project:** owner, title, description, tech stack, repo URL, optional demo URL,
   status (idea, building, shipped).
 - **Meetup:** date, topic, host, agenda, attendees.
