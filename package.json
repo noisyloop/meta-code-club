@@ -15,8 +15,8 @@
     "last 1 Chrome version"
   ],
   "dependencies": {
-    "@astryxdesign/core": "^0.7.12-canary.a0f2a2d",
-    "@astryxdesign/theme-neutral": "^0.7.12-canary.a0f2a2d",
+    "@astryxdesign/core": "^0.7.18-canary.g402033f",
+    "@astryxdesign/theme-neutral": "^0.7.18-canary.g402033f",
     "@stylexjs/stylex": "^0.19.1",
     "lucide-react": "^1.70.0",
     "react": "^19.3.1",
@@ -24,7 +24,7 @@
     "react-router-dom": "^7.18.5"
   },
   "devDependencies": {
-    "@astryxdesign/cli": "^0.7.12-canary.a0f2a2d",
+    "@astryxdesign/cli": "^0.7.18-canary.g402033f",
     "@babel/core": "^7.29.7",
     "@stylexjs/babel-plugin": "^0.19.1",
     "@stylexjs/unplugin": "^0.19.1",
